@@ -1,0 +1,14 @@
+"STARTUP.obj",
+"ÖÇÄÜÄÖÖÓ.obj",
+"Temperature.obj",
+"Clocker.obj",
+"Time.obj",
+"Buttons.obj",
+"DisTemperature.obj",
+"DisTime.obj",
+"DisDate.obj",
+"lcd.obj",
+"common.obj",
+"lcd1602.obj" 
+TO "ÖÇÄÜÄÖÖÓ" 
+RAMSIZE(256) 

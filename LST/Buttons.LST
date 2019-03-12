@@ -1,0 +1,543 @@
+C51 COMPILER V9.00   BUTTONS                                                               01/16/2019 10:26:32 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE BUTTONS
+OBJECT MODULE PLACED IN Buttons.OBJ
+COMPILER INVOKED BY: D:\MCU\KEILMDK\C51\BIN\C51.EXE Buttons.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*******************************************************************************
+   2          * 实验效果       :1602显示时钟，按K3进入时钟设置，按K1选择设置的时分秒日月，按K2选择
+   3          *选择设置加1。 
+   4          *******************************************************************************/
+   5          #include"lcd.h"
+   6          #include"ds1302.h"
+   7          #include "lcd1602.h"
+   8          sbit K1=P3^0;   //+
+   9          sbit K2=P3^1;   //下一项设置
+  10          sbit K3=P3^2;   //时间日期星期设置
+  11          sbit K4=P3^3;   //闹钟设置
+  12          sbit K5=P3^4;   //-
+  13          void Int0Configuration();
+  14          void Int1Configuration();
+  15          void DisDate();
+  16          void DisTime();
+  17          void Clocker();
+  18          unsigned char SetState,ClockState,SetPlace=0,SetNao=0;
+  19          void Delay10ms(void);   //误差 0us
+  20          extern unsigned char clockdata[];
+  21          unsigned char naozhongdata[]={0,28,10,0};
+  22          extern unsigned char jz;
+  23          unsigned char evd;
+  24          /*******************************************************************************
+  25          * 函数名         : main
+  26          * 函数功能                 : 主函数
+  27          *******************************************************************************/
+  28          
+  29          void Buttons()
+  30          {
+  31   1          
+  32   1          unsigned char i;
+  33   1              Int0Configuration();
+  34   1              Int1Configuration();
+  35   1      /**********************************************************************/        
+  36   1                      while(SetState)
+  37   1                      {
+  38   2                        DS1302_settime();
+  39   2                        /***********************************/
+  40   2                       switch( jz )
+  41   2                      {
+  42   3                      case 2:
+  43   3                      LCD1602_PrintChar(1,1,clockdata[2]/10 + '0');
+  44   3                      LCD1602_PrintChar(1,2,clockdata[2]%10 + '0');
+  45   3                      LCD1602_PrintChar(1,9,' ');
+  46   3                       LCD1602_PrintChar(1,10,' ');
+  47   3                      break;
+  48   3                      case 1: 
+  49   3                      if(clockdata[2]>12)
+  50   3                      {
+  51   4                       LCD1602_PrintChar(1,1,12/clockdata[2] + '0');
+  52   4                       LCD1602_PrintChar(1,2,clockdata[2]%12 + '0');
+  53   4                       LCD1602_PrintChar(1,9,'p');
+  54   4                       LCD1602_PrintChar(1,10,'m');
+  55   4                      }
+C51 COMPILER V9.00   BUTTONS                                                               01/16/2019 10:26:32 PAGE 2   
+
+  56   3                      else
+  57   3                      {
+  58   4                       LCD1602_PrintChar(1,1,clockdata[2]/12 + '0');
+  59   4                       LCD1602_PrintChar(1,2,clockdata[2]%12 + '0');
+  60   4                       LCD1602_PrintChar(1,9,'a');
+  61   4                       LCD1602_PrintChar(1,10,'m');
+  62   4                      }
+  63   3                      break;
+  64   3                      }
+  65   2                          LCD1602_PrintChar(1,3,':');
+  66   2                              //分
+  67   2                              LCD1602_PrintChar(1,4,clockdata[1]/10 + '0');
+  68   2                              LCD1602_PrintChar(1,5,clockdata[1]%10 + '0');
+  69   2                              LCD1602_PrintChar(1,6,':');
+  70   2                              //秒
+  71   2                              LCD1602_PrintChar(1,7,clockdata[0]/10 + '0');
+  72   2                              LCD1602_PrintChar(1,8,clockdata[0]%10 + '0');
+  73   2                        /************************************/
+  74   2                              LCD1602_PrintChar(2,7,clockdata[8]/10 + '0');
+  75   2                              LCD1602_PrintChar(2,8,clockdata[8]%10 + '0');
+  76   2                              LCD1602_PrintChar(2,9,clockdata[5]/10 + '0');
+  77   2                              LCD1602_PrintChar(2,10,clockdata[5]%10 + '0');
+  78   2                              LCD1602_PrintChar(2,11,'/');
+  79   2                              //月份
+  80   2                              LCD1602_PrintChar(2,12,clockdata[4]/10 + '0');
+  81   2                              LCD1602_PrintChar(2,13,clockdata[4]%10 + '0');
+  82   2                          LCD1602_PrintChar(2,14,'/');
+  83   2                              //日期
+  84   2                              LCD1602_PrintChar(2,15,clockdata[3]/10 + '0');
+  85   2                              LCD1602_PrintChar(2,16,clockdata[3]%10 + '0');
+  86   2              
+  87   2                              switch( clockdata[6] )
+  88   2                              {
+  89   3                                      case 1:
+  90   3                                              //星期日
+  91   3                                              LCD1602_PrintString(1,14,"Sun");
+  92   3                                              break;
+  93   3                                      case 2:
+  94   3                                              //星期一
+  95   3                                              LCD1602_PrintString(1,14,"Mon");
+  96   3                                              break;
+  97   3                                      case 3:
+  98   3                                              //星期二
+  99   3                                              LCD1602_PrintString(1,14,"The");
+ 100   3                                              break;
+ 101   3                                      case 4:
+ 102   3                                              //星期三
+ 103   3                                              LCD1602_PrintString(1,14,"Wed");
+ 104   3                                              break;
+ 105   3                                      case 5:
+ 106   3                                              //星期四
+ 107   3                                              LCD1602_PrintString(1,14,"Thu");
+ 108   3                                              break;
+ 109   3                                      case 6:
+ 110   3                                              //星期五
+ 111   3                                              LCD1602_PrintString(1,14,"Fri");
+ 112   3                                              break;
+ 113   3                                      case 7:
+ 114   3                                              //星期六
+ 115   3                                              LCD1602_PrintString(1,14,"Sat");
+ 116   3                                              break;
+ 117   3                                      default:
+C51 COMPILER V9.00   BUTTONS                                                               01/16/2019 10:26:32 PAGE 3   
+
+ 118   3                                              LCD1602_PrintString(1,14,"Ero");
+ 119   3                                              break;
+ 120   3                              }
+ 121   2                        /************************************/
+ 122   2                                      if(K1==0)               //检测按键K1是否按下      //+
+ 123   2                              {
+ 124   3                                      Delay10ms();    //消除抖动
+ 125   3                                      if(K1==0)
+ 126   3                                      {
+ 127   4                                              clockdata[SetPlace]++;
+ 128   4                                              if(SetPlace>=7)
+ 129   4                                              {
+ 130   5                                                SetPlace=0;
+ 131   5                                              }
+ 132   4                                              if(clockdata[0]>=60)      //秒
+ 133   4                                              {
+ 134   5                                                 clockdata[0]=0;
+ 135   5                                              }
+ 136   4                                              if(clockdata[1]>=60)      //分
+ 137   4                                              {
+ 138   5                                                 clockdata[1]=0;
+ 139   5                                              }
+ 140   4                                              if((jz==2)&&(clockdata[2]==24))   //24时
+ 141   4                                              {
+ 142   5                                                 clockdata[2]=0;
+ 143   5                                              }
+ 144   4                                              if((jz==1)&&(clockdata[2]>12))    //12时
+ 145   4                                              {
+ 146   5                                                 clockdata[2]=0;
+ 147   5                                              }
+ 148   4                                              if(clockdata[3]>=32)      //日
+ 149   4                                              {
+ 150   5                                                 clockdata[3]=1;
+ 151   5                                              }
+ 152   4                                              if(clockdata[4]>=13)      //月
+ 153   4                                              {
+ 154   5                                                 clockdata[4]=1;
+ 155   5                                              }
+ 156   4                                              if(clockdata[5]>=99)      //年
+ 157   4                                              {
+ 158   5                                                 clockdata[5]=0;
+ 159   5                                              }
+ 160   4                                              if(clockdata[6]>=7)               //星期
+ 161   4                                              {
+ 162   5                                                 clockdata[6]=1;
+ 163   5                                              }                                       
+ 164   4                                      }
+ 165   3      
+ 166   3                                      while((i<50)&&(K1==0))   //检测按键是否松开
+ 167   3                                      {
+ 168   4                                              Delay10ms();
+ 169   4                                              i++;
+ 170   4                                      }
+ 171   3                                      i=0;
+ 172   3                              }
+ 173   2                              /****************************************/
+ 174   2                              if(K5==0)               //检测按键K5是否按下            //-
+ 175   2                              {
+ 176   3                                      Delay10ms();    //消除抖动
+ 177   3                                      if(K5==0)
+ 178   3                                      {
+ 179   4                                              clockdata[SetPlace]--;
+C51 COMPILER V9.00   BUTTONS                                                               01/16/2019 10:26:32 PAGE 4   
+
+ 180   4                                              if(SetPlace>=7)
+ 181   4                                              {
+ 182   5                                               SetPlace=0;
+ 183   5                                               }
+ 184   4                                               if(clockdata[0]<0)       //秒
+ 185   4                                              {
+ 186   5                                                 clockdata[0]=59;
+ 187   5                                              }
+ 188   4                                              if(clockdata[1]<0)        //分
+ 189   4                                              {
+ 190   5                                                 clockdata[1]=59;
+ 191   5                                              }
+ 192   4                                              if((jz==2)&&(clockdata[2]<0))     //24时
+ 193   4                                              {
+ 194   5                                                 clockdata[2]=23;
+ 195   5                                              }
+ 196   4                                              if((jz==1)&&(clockdata[2]<0))     //12时
+ 197   4                                              {
+ 198   5                                                 clockdata[2]=11;
+ 199   5                                              }
+ 200   4                                              if(clockdata[3]<0)        //日
+ 201   4                                              {
+ 202   5                                                 clockdata[3]=31;
+ 203   5                                              }
+ 204   4                                              if(clockdata[4]<0)        //月
+ 205   4                                              {
+ 206   5                                                 clockdata[4]=12;
+ 207   5                                              }
+ 208   4                                              if(clockdata[5]<0)        //年
+ 209   4                                              {
+ 210   5                                                 clockdata[5]=99;
+ 211   5                                              }
+ 212   4                                              if(clockdata[6]<0)        //星期
+ 213   4                                              {
+ 214   5                                                 clockdata[6]=7;
+ 215   5                                              }                                                               
+ 216   4                                      }
+ 217   3      
+ 218   3                                      while((i<50)&&(K5==0))   //检测按键是否松开
+ 219   3                                      {
+ 220   4                                              Delay10ms();
+ 221   4                                              i++;
+ 222   4                                      }
+ 223   3                                      i=0;
+ 224   3                              }
+ 225   2                              /**************************************************/
+ 226   2                      
+ 227   2                              /***************************************************/
+ 228   2                              if(K2==0)               //检测按键K2是否按下
+ 229   2                              {
+ 230   3                                      Delay10ms();    //消除抖动
+ 231   3                                      if(K2==0)
+ 232   3                                      {
+ 233   4                                              SetPlace++;
+ 234   4                                              if(SetPlace>=7)
+ 235   4                                              {
+ 236   5                                                SetPlace=0;
+ 237   5                                              }
+ 238   4                                      /*      if((clockdata[SetPlace]&0x0f)>9)                                         //换成BCD码。
+ 239   4                                              {
+ 240   4                                                      clockdata[SetPlace]=clockdata[SetPlace]+6;
+ 241   4                                              }  */
+C51 COMPILER V9.00   BUTTONS                                                               01/16/2019 10:26:32 PAGE 5   
+
+ 242   4                                              if((clockdata[SetPlace]>=60)&&(SetPlace<2))             //分秒只能到59
+ 243   4                                              {
+ 244   5                                                      clockdata[SetPlace]=0;
+ 245   5                                              }
+ 246   4                                              if((jz==2)&&(clockdata[SetPlace]>24)&&(SetPlace==2))            //24小时只能到23
+ 247   4                                              {
+ 248   5                                                      clockdata[SetPlace]=0;
+ 249   5                                              }
+ 250   4                                              if((jz==1)&&(clockdata[SetPlace]>=12)&&(SetPlace==2))           //12小时只能到12
+ 251   4                                              {
+ 252   5                                                      clockdata[SetPlace]=0;
+ 253   5                                              }   
+ 254   4                                              if((clockdata[SetPlace]>=32)&&(SetPlace==3))            //日只能到31
+ 255   4                                              {
+ 256   5                                                      clockdata[SetPlace]=0;  
+ 257   5                                              }
+ 258   4                                              if((clockdata[SetPlace]>=13)&&(SetPlace==4))            //月只能到12
+ 259   4                                              {
+ 260   5                                                      clockdata[SetPlace]=0;
+ 261   5                                              }
+ 262   4                                              if((clockdata[SetPlace]>=99)&&(SetPlace==5))            //年只能到99
+ 263   4                                              {
+ 264   5                                                      clockdata[SetPlace]=1;
+ 265   5                                              }       
+ 266   4                                              if((clockdata[SetPlace]>=7)&&(SetPlace==6))             //周只能到7
+ 267   4                                              {
+ 268   5                                                      clockdata[SetPlace]=1;
+ 269   5                                              }               
+ 270   4              
+ 271   4                                      }
+ 272   3                                      
+ 273   3                                      while((i<50)&&(K2==0))   //检测按键是否松开
+ 274   3                                      {
+ 275   4                                              Delay10ms();
+ 276   4                                              i++;
+ 277   4                                      }
+ 278   3                                      i=0;
+ 279   3                                      
+ 280   3                              }
+ 281   2                                                                      
+ 282   2                      }
+ 283   1      /***********************************************************/
+ 284   1      //闹钟设置
+ 285   1      /***********************************************************/
+ 286   1         while(ClockState)
+ 287   1                      {
+ 288   2                        /***********************************/
+ 289   2                              //时
+ 290   2                              LCD1602_PrintChar(1,1,naozhongdata[2]/10 + '0');
+ 291   2                              LCD1602_PrintChar(1,2,naozhongdata[2]%10 + '0');
+ 292   2                              LCD1602_PrintChar(1,9,' ');
+ 293   2                              LCD1602_PrintChar(1,10,' ');
+ 294   2                              //分
+ 295   2                              LCD1602_PrintChar(1,4,naozhongdata[1]/10 + '0');
+ 296   2                              LCD1602_PrintChar(1,5,naozhongdata[1]%10 + '0');
+ 297   2                              
+ 298   2                              //秒
+ 299   2                              LCD1602_PrintChar(1,7,naozhongdata[0]/10 + '0');
+ 300   2                              LCD1602_PrintChar(1,8,naozhongdata[0]%10 + '0');
+ 301   2                              /****************************************************/
+ 302   2                          if(K1==0)           //检测按键K1是否按下      //+
+ 303   2                              {
+C51 COMPILER V9.00   BUTTONS                                                               01/16/2019 10:26:32 PAGE 6   
+
+ 304   3                                      Delay10ms();    //消除抖动
+ 305   3                                      if(K1==0)
+ 306   3                                      {
+ 307   4                                         naozhongdata[SetNao]++;
+ 308   4                                              if(naozhongdata[0]>=60)   //秒
+ 309   4                                              {
+ 310   5                                                 naozhongdata[0]=0;
+ 311   5                                              }
+ 312   4                                              if(naozhongdata[1]>=60)   //分
+ 313   4                                              {
+ 314   5                                                 naozhongdata[1]=0;
+ 315   5                                              }
+ 316   4                                              if((naozhongdata[2]==24))         //24时
+ 317   4                                              {
+ 318   5                                                 clockdata[2]=0;
+ 319   5                                              }
+ 320   4                                              if(naozhongdata[3]>1)             //星期
+ 321   4                                              {
+ 322   5                                                 naozhongdata[3]=0;
+ 323   5                                              }                                       
+ 324   4                                      }
+ 325   3      
+ 326   3                                      while((i<50)&&(K1==0))   //检测按键是否松开
+ 327   3                                      {
+ 328   4                                              Delay10ms();
+ 329   4                                              i++;
+ 330   4                                      }
+ 331   3                                      i=0;
+ 332   3                              }
+ 333   2                              /*****************************************************/
+ 334   2                              if(K5==0)               //检测按键K5是否按下            //-
+ 335   2                              {
+ 336   3                                      Delay10ms();    //消除抖动
+ 337   3                                      if(K5==0)
+ 338   3                                      {
+ 339   4                                              naozhongdata[SetNao]--;
+ 340   4                                               if(naozhongdata[0]<0)    //秒
+ 341   4                                              {
+ 342   5                                                 naozhongdata[0]=0;
+ 343   5                                              }
+ 344   4                                              if(naozhongdata[1]<0)     //分
+ 345   4                                              {
+ 346   5                                                 naozhongdata[1]=59;
+ 347   5                                              }
+ 348   4                                              if((naozhongdata[2]<0))   //24时
+ 349   4                                              {
+ 350   5                                                 naozhongdata[2]=23;
+ 351   5                                              }
+ 352   4                                              if(naozhongdata[3]==0)    //星期
+ 353   4                                              {
+ 354   5                                                 naozhongdata[3]=0;
+ 355   5                                              }                                                               
+ 356   4                                      }
+ 357   3      
+ 358   3                                      while((i<50)&&(K5==0))   //检测按键是否松开
+ 359   3                                      {
+ 360   4                                              Delay10ms();
+ 361   4                                              i++;
+ 362   4                                      }
+ 363   3                                      i=0;
+ 364   3                              }
+ 365   2                              /***************************************************/
+C51 COMPILER V9.00   BUTTONS                                                               01/16/2019 10:26:32 PAGE 7   
+
+ 366   2                              if(K2==0)               //检测按键K2是否按下            设置下一项
+ 367   2                              {
+ 368   3                                      Delay10ms();    //消除抖动
+ 369   3                                      if(K2==0)
+ 370   3                                      {
+ 371   4                                              SetNao++;
+ 372   4                                              if(SetNao>3)
+ 373   4                                              {
+ 374   5                                                SetNao=0;
+ 375   5                                              }
+ 376   4                                              if((naozhongdata[SetNao]>=60)&&(SetNao<2))              //分秒只能到59
+ 377   4                                              {
+ 378   5                                                      naozhongdata[SetNao]=0;
+ 379   5                                              }
+ 380   4                                              if((naozhongdata[SetNao]>24)&&(SetNao==2))              //24小时只能到23
+ 381   4                                              {
+ 382   5                                                      naozhongdata[SetNao]=0;
+ 383   5                                              }
+ 384   4                               
+ 385   4                                              if((naozhongdata[SetNao]>1)&&(SetNao==3))               //周只能到7
+ 386   4                                              {
+ 387   5                                                      naozhongdata[SetNao]=1;
+ 388   5                                              }               
+ 389   4                                      }       
+ 390   3                                      while((i<50)&&(K2==0))   //检测按键是否松开
+ 391   3                                      {
+ 392   4                                              Delay10ms();
+ 393   4                                              i++;
+ 394   4                                      }
+ 395   3                                      i=0;    
+ 396   3                              }
+ 397   2                              if(naozhongdata[3]==1)
+ 398   2                              {
+ 399   3                                      LCD1602_PrintChar(1,11,'E');
+ 400   3                                      LCD1602_PrintChar(1,12,'v');
+ 401   3                                      LCD1602_PrintChar(1,13,'D');
+ 402   3                            }
+ 403   2                        if(naozhongdata[3]==0)
+ 404   2                              {
+ 405   3                                      LCD1602_PrintChar(1,11,' ');
+ 406   3                                      LCD1602_PrintChar(1,12,' ');
+ 407   3                                      LCD1602_PrintChar(1,13,' ');
+ 408   3                            } 
+ 409   2                       
+ 410   2                 }
+ 411   1                 if((naozhongdata[0]==clockdata[0])&&(naozhongdata[1]==clockdata[1])
+ 412   1                           &&(naozhongdata[2]==clockdata[2])&&(naozhongdata[3]==1))
+ 413   1                       { 
+ 414   2                       while(1)
+ 415   2                        { 
+ 416   3                         Clocker();
+ 417   3                        if(K1==0)
+ 418   3                              {
+ 419   4                                 Delay10ms(); //消除抖动
+ 420   4                                 if(K1==0)
+ 421   4                                 {    
+ 422   5                                  break;
+ 423   5                                 }
+ 424   4                              }
+ 425   3                      
+ 426   3                        }
+ 427   2                       }
+C51 COMPILER V9.00   BUTTONS                                                               01/16/2019 10:26:32 PAGE 8   
+
+ 428   1                      
+ 429   1      
+ 430   1      /*****************************************************************/             
+ 431   1      }
+ 432          /*******************************************************************************
+ 433          * 函数名         : Int0Configuration()
+ 434          * 函数功能                 : 配置外部中断0
+ 435          * 输入           : 无
+ 436          * 输出           : 无
+ 437          *******************************************************************************/
+ 438          
+ 439          void Int0Configuration()
+ 440          {
+ 441   1              //设置INT0
+ 442   1              IT0=1;//跳变沿出发方式（下降沿）
+ 443   1              EX0=1;//打开INT0的中断允许。
+ 444   1              EA=1;//打开总中断       
+ 445   1      }
+ 446          
+ 447          /*******************************************************************************
+ 448          * 函数名         : Int0() 
+ 449          * 函数功能                 : 外部中断0 中断函数
+ 450          * 输入           : 无
+ 451          * 输出           : 无
+ 452          *******************************************************************************/
+ 453          
+ 454          void Int0() interrupt 0          
+ 455          {
+ 456   1              Delay10ms();
+ 457   1              if(K3==0)
+ 458   1              {
+ 459   2                      SetState=~SetState;
+ 460   2                      SetPlace=0;     
+ 461   2              }
+ 462   1      }
+ 463          /*******************************************************************************
+ 464          * 函数名         : Int1Configuration()
+ 465          * 函数功能                 : 配置外部中断0
+ 466          * 输入           : 无
+ 467          * 输出           : 无
+ 468          *******************************************************************************/
+ 469          void Int1Configuration()
+ 470          {
+ 471   1              //设置INT0
+ 472   1              IT1=1;//跳变沿出发方式（下降沿）
+ 473   1              EX1=1;//打开INT0的中断允许。
+ 474   1              EA=1;//打开总中断       
+ 475   1      }
+ 476          /*******************************************************************************
+ 477          * 函数名         : Int0() 
+ 478          * 函数功能                 : 外部中断0 中断函数
+ 479          * 输入           : 无
+ 480          * 输出           : 无
+ 481          *******************************************************************************/
+ 482          void Int1() interrupt 2          
+ 483          {
+ 484   1              Delay10ms();
+ 485   1              if(K4==0)
+ 486   1              {
+ 487   2               ClockState=~ClockState;
+ 488   2               SetPlace=0;            
+ 489   2              }
+C51 COMPILER V9.00   BUTTONS                                                               01/16/2019 10:26:32 PAGE 9   
+
+ 490   1      }
+ 491          /*******************************************************************************
+ 492          * 函数名         : Delay10ms
+ 493          * 函数功能                 : 延时函数，延时10ms
+ 494          * 输入           : 无
+ 495          * 输出           : 无
+ 496          *******************************************************************************/
+ 497          void Delay10ms(void)   //误差 0us
+ 498          {
+ 499   1          unsigned char a,b,c;
+ 500   1          for(c=1;c>0;c--)
+ 501   1              for(b=38;b>0;b--)
+ 502   1                  for(a=130;a>0;a--);
+ 503   1      } 
+ 504           
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =   1618    ----
+   CONSTANT SIZE    =     32    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      9       1
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

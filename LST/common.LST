@@ -1,0 +1,48 @@
+C51 COMPILER V9.00   COMMON                                                                01/16/2019 10:26:34 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE COMMON
+OBJECT MODULE PLACED IN common.OBJ
+COMPILER INVOKED BY: D:\MCU\KEILMDK\C51\BIN\C51.EXE common.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include "common.h"
+   2          
+   3          void delay_ms( unsigned int t )
+   4          {
+   5   1              unsigned char i;
+   6   1              while ( t-- )
+   7   1                      for ( i = 0 ; i < 120; i++ );
+   8   1      }
+   9          
+  10          unsigned int strtoint( unsigned char * str )
+  11          {
+  12   1              unsigned char *strpointer;
+  13   1              unsigned int tmp;
+  14   1      
+  15   1              tmp = 0;
+  16   1              strpointer = str;
+  17   1      
+  18   1              while ( *strpointer != '\0' )
+  19   1              {
+  20   2                      tmp = tmp * 10 + ( *strpointer - '0' );
+  21   2                      strpointer++;
+  22   2              }
+  23   1      
+  24   1              return tmp;
+  25   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     88    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----       5
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

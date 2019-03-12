@@ -1,0 +1,192 @@
+C51 COMPILER V9.00   LCD1602                                                               01/16/2019 10:26:34 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE LCD1602
+OBJECT MODULE PLACED IN lcd1602.OBJ
+COMPILER INVOKED BY: D:\MCU\KEILMDK\C51\BIN\C51.EXE lcd1602.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include "LCD1602.h"
+   2          #include "common.h"
+   3          
+   4          //等待LCD1602空闲
+   5          void LCD1602_Wait()
+   6          {
+   7   1      #ifdef  LCD1602_MODE_4BIT                               //////////////////////////////4位模式
+                      unsigned char lcdstatus_low;
+              #endif
+  10   1      
+  11   1              unsigned char lcdstatus;
+  12   1              
+  13   1              do {
+  14   2      
+  15   2      #ifdef LCD1602_MODE_4BIT                                   //-------------------------4位模式
+                              LCDDATAPORT = 0xF0;                       //数据商品设置为0xF0
+              #else                                                                     /////////////////////////8位模式
+  18   2                      LCDDATAPORT = 0xFF;                       //数据商品设置为0xFF
+  19   2      #endif
+  20   2      
+  21   2                      LCDEN = 0; LCDRS = 0; LCDRW = 1;  //禁止LCD; 选择命令寄存器; 读操作
+  22   2      
+  23   2      #ifdef LCD1602_MODE_4BIT                         //-------------------------4位模式
+                              LCDEN = 1; delay_5us();         //使能LCD
+                              lcdstatus = LCDDATAPORT; delay_5us();  //读取状态高4位
+                              LCDEN = 0;delay_5us();          //禁止LCD
+              
+                              LCDEN = 1; delay_5us();          //使能LCD
+                              lcdstatus_low = LCDDATAPORT; delay_5us();  //读取状态低4位
+                              LCDEN = 0;delay_5us();          //禁止LCD
+              #else                                                           //+++++++++++++++++++++++8位模式
+  32   2                      LCDEN = 1; delay_5us();         //使能LCD
+  33   2                      lcdstatus = LCDDATAPORT;delay_5us();  //读取状态
+  34   2                      LCDEN = 0;delay_5us();     //禁止LCD
+  35   2      #endif                                                            
+  36   2              } while ( lcdstatus & 0x80);
+  37   1      }
+  38          
+  39          //向LCD1602写入命令
+  40          void LCD1602_WriteCommand( unsigned char cmd )
+  41          {
+  42   1              LCD1602_Wait();                                          //等待LCD空闲
+  43   1      
+  44   1              LCDEN = 0;      LCDRS = 0; LCDRW = 0;    //禁止LCD，选择命令寄存器，写操作
+  45   1      
+  46   1      #ifdef LCD1602_MODE_4BIT                                 //---------------------------------4位模式
+                      LCDDATAPORT = cmd & 0xF0;                        //写入命令高4位
+                      LCDEN = 1; delay_5us();                          //使能LCD
+                      LCDEN = 0; delay_5us();                          //禁止LCD
+              
+                      LCDDATAPORT = (( cmd & 0x0F) << 4 );//写入命令低4位
+                      LCDEN = 1; delay_5us();                         //使能LCD
+                      LCDEN = 0; delay_5us();                         //禁止LCD
+              #else                                                                    //+++++++++++++++++++++++++++++++++8位模式
+  55   1              LCDDATAPORT = cmd;                                       //写入命令
+C51 COMPILER V9.00   LCD1602                                                               01/16/2019 10:26:34 PAGE 2   
+
+  56   1              LCDEN = 1; delay_5us();                         //使能LCD
+  57   1              LCDEN = 0; delay_5us();                         //禁止LCD
+  58   1      #endif
+  59   1      }
+  60          
+  61          //向LCD1602写入数据
+  62          void LCD1602_WriteData( unsigned char dat)
+  63          {
+  64   1              LCD1602_Wait();                                         //等待LCD空闲
+  65   1      
+  66   1              LCDEN = 0;      LCDRS = 1; LCDRW = 0;   //禁止LCD，选择数据寄存器，写操作
+  67   1      
+  68   1      #ifdef LCD1602_MODE_4BIT                                 //-----------------------------4位模式
+                      LCDDATAPORT = dat & 0xF0;                        //写入命令高4位
+                      LCDEN = 1;delay_5us();                           //使能LCD
+                      LCDEN = 0; delay_5us();                          //禁止LCD
+              
+                      LCDDATAPORT = ((dat & 0x0F) << 4);       //写入命令低4位
+                      LCDEN = 1; delay_5us();                          //使能LCD
+                      LCDEN = 0; delay_5us();                          //禁止LCD
+              #else                                                                    //+++++++++++++++++++++++++++++8位模式
+  77   1              LCDDATAPORT = dat;                                       //写入命令
+  78   1              LCDEN = 1; delay_5us();                          //使能LCD
+  79   1              LCDEN = 0; delay_5us();                          //禁止LCD
+  80   1      #endif
+  81   1      }
+  82          
+  83          //初始化LCD1602
+  84          void LCD1602_Initialize( )
+  85          {
+  86   1      #ifdef LCD1602_MODE_4BIT                        //-----------------------------4位模式
+                      LCD1602_WriteCommand( LCD1602_CMD_4BIT_2LINE_5X7 ); 
+              #else                                                           //+++++++++++++++++++++++++++++8位模式
+  89   1              LCD1602_WriteCommand( LCD1602_CMD_8BIT_2LINE_5X7 );
+  90   1      #endif 
+  91   1              
+  92   1              delay_ms(1);
+  93   1              LCD1602_WriteCommand( LCD1602_CMD_RESET ); delay_ms(1);
+  94   1              LCD1602_WriteCommand( LCD1602_CMD_CURSOR_TO_RIGHT ); delay_ms(1);
+  95   1              LCD1602_WriteCommand( LCD1602_CMD_LCD_ON_CURSOR_OFF_BLANK_OFF ); delay_ms(1);
+  96   1      
+  97   1      }
+  98          
+  99          //将自定义字符点阵数据写到CGRAM
+ 100          void LCD1602_WriteCGRAM( unsigned char cgramdata[][8], unsigned char n) 
+ 101          {
+ 102   1              unsigned char i,j;
+ 103   1              LCD1602_WriteCommand( 0x40 );                   //设置CGRAM的地址为0x40
+ 104   1              for ( j = 0; j < n; j++ )
+ 105   1              for ( i = 0; i < 8; i++ )                               //写入8个字节的自定义字模数据
+ 106   1                      LCD1602_WriteData( cgramdata[j][i] );                                      
+ 107   1      }
+ 108          
+ 109          
+ 110          //将DDRAM数据指针定位到第row行、第column列；row取1或2，column范围为1~16
+ 111          void LCD1602_Locate( unsigned char row, unsigned char column )
+ 112          {
+ 113   1              unsigned char address;
+ 114   1              if( row == 1 )
+ 115   1                      address = 0x80 + column - 1; // - - 第一行位置
+ 116   1              else
+ 117   1              address = 0xc0 + column - 1; // - - 第二行位置
+C51 COMPILER V9.00   LCD1602                                                               01/16/2019 10:26:34 PAGE 3   
+
+ 118   1              
+ 119   1              LCD1602_WriteCommand(address);  //写入地址
+ 120   1      }
+ 121          
+ 122          //在第row行、第column列显示字符c,row取1或2，column范围为1~16
+ 123          void LCD1602_PrintChar(  unsigned char row, unsigned char column, unsigned char c )
+ 124          {
+ 125   1              LCD1602_Locate( row, column);                     //定位读写DDRAM指针
+ 126   1          LCD1602_WriteData( c );                                       //写入DDRAM数据
+ 127   1      }
+ 128          
+ 129          //从第row行、第column列开始显示字符串str,row取1或2，column范围为1~16,str以'\0'结束
+ 130          void LCD1602_PrintString(  unsigned char row, unsigned char column, unsigned char *str )
+ 131          {
+ 132   1              unsigned int i;
+ 133   1              unsigned char *strpointer;                      //数据指针
+ 134   1              unsigned char rowtmp, columntmp;        //当前行、当前列
+ 135   1      
+ 136   1              //如果row、column无效则显示提示信息，并退出
+ 137   1              unsigned char errorstring[12] = "(1,1)~(2,16)";                         
+ 138   1              if ( row < 1 || row > 2 || column < 1 || column > 16 )
+ 139   1              {
+ 140   2                      for ( i = 0; i < 12; i++ )
+ 141   2                              LCD1602_PrintChar( 1, i+1, errorstring[i]);      //在第1行显示errorstring字符串
+ 142   2                      return;                                                                                  //退出
+ 143   2              }
+ 144   1              
+ 145   1              rowtmp = row; columntmp = column;                                       //当前行、当前列分别为row、column
+ 146   1              strpointer = str;                                                                       //数据指针先赋值为str
+ 147   1      
+ 148   1              while ( *strpointer != '\0' )                                           //字符串是否结束？
+ 149   1              {
+ 150   2                      LCD1602_PrintChar( rowtmp, columntmp, *strpointer );  //在当前行、当前列打印一个字符
+ 151   2                      
+ 152   2                      strpointer++;                                                                             //修改数据指针，指向下一个要打印的字符
+ 153   2                      columntmp++;                                                                              //当前列行右移一次
+ 154   2      
+ 155   2                      if ( columntmp > 16 )                                                             //如果到了当前行的最后一列，从下一行的第1列开始
+ 156   2                      {
+ 157   3                              columntmp = 1;                                                                    //第1列
+ 158   3      
+ 159   3                              rowtmp++;                                                                                 //下一行
+ 160   3                              if ( rowtmp > 2 )                                                                 //已经是第2行了，则回到第1行
+ 161   3                                      rowtmp = 1;
+ 162   3                      }       
+ 163   2              }
+ 164   1      
+ 165   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    394    ----
+   CONSTANT SIZE    =     12    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      28
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

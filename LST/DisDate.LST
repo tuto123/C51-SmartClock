@@ -1,0 +1,112 @@
+C51 COMPILER V9.00   DISDATE                                                               01/16/2019 10:26:33 PAGE 1   
+
+
+C51 COMPILER V9.00, COMPILATION OF MODULE DISDATE
+OBJECT MODULE PLACED IN DisDate.OBJ
+COMPILER INVOKED BY: D:\MCU\KEILMDK\C51\BIN\C51.EXE DisDate.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          /*******************************************************************************
+   2          
+   3          * 函数功能名:   日期显示
+   4          
+   5          *******************************************************************************/
+   6          #include"lcd.h"
+   7          #include"lcd1602.h"
+   8          #include "DS1302.h"
+   9          #include<temp.h>
+  10          void DisTime();
+  11          void DisTemperture();
+  12          void DisDate();
+  13          extern unsigned char clockdata[9];
+  14          void DisDate()
+  15          {
+  16   1              
+  17   1       /*   clockdata[0] = 0;                 //秒
+  18   1              clockdata[1] = 42;                      //分
+  19   1              clockdata[2] = 10;                      //小时
+  20   1              clockdata[3] = 10;                  //日期
+  21   1              clockdata[4] = 1;                   //月份
+  22   1              clockdata[5] = 19;                  //年
+  23   1              clockdata[6] = 3;                       //星期几
+  24   1              clockdata[7] = 0;
+  25   1              clockdata[8] = 20;      */
+  26   1      
+  27   1      //      LCD1602_Initialize();
+  28   1      
+  29   1      //      DS1302_settime();
+  30   1      //      while (1)
+  31   1      //      {
+  32   1      //              DS1302_gettime();
+  33   1                      
+  34   1                      //年份
+  35   1                      LCD1602_PrintChar(2,7,clockdata[8]/10 + '0');
+  36   1                      LCD1602_PrintChar(2,8,clockdata[8]%10 + '0');
+  37   1                      LCD1602_PrintChar(2,9,clockdata[5]/10 + '0');
+  38   1                      LCD1602_PrintChar(2,10,clockdata[5]%10 + '0');
+  39   1                      LCD1602_PrintChar(2,11,'/');
+  40   1                      //月份
+  41   1                      LCD1602_PrintChar(2,12,clockdata[4]/10 + '0');
+  42   1                      LCD1602_PrintChar(2,13,clockdata[4]%10 + '0');
+  43   1                  LCD1602_PrintChar(2,14,'/');
+  44   1                      //日期
+  45   1                      LCD1602_PrintChar(2,15,clockdata[3]/10 + '0');
+  46   1                      LCD1602_PrintChar(2,16,clockdata[3]%10 + '0');
+  47   1      
+  48   1                      switch( clockdata[6] )
+  49   1                      {
+  50   2                              case 1:
+  51   2                                      //星期日
+  52   2                                      LCD1602_PrintString(1,14,"Sun");
+  53   2                                      break;
+  54   2                              case 2:
+  55   2                                      //星期一
+C51 COMPILER V9.00   DISDATE                                                               01/16/2019 10:26:33 PAGE 2   
+
+  56   2                                      LCD1602_PrintString(1,14,"Mon");
+  57   2                                      break;
+  58   2                              case 3:
+  59   2                                      //星期二
+  60   2                                      LCD1602_PrintString(1,14,"The");
+  61   2                                      break;
+  62   2                              case 4:
+  63   2                                      //星期三
+  64   2                                      LCD1602_PrintString(1,14,"Wed");
+  65   2                                      break;
+  66   2                              case 5:
+  67   2                                      //星期四
+  68   2                                      LCD1602_PrintString(1,14,"Thu");
+  69   2                                      break;
+  70   2                              case 6:
+  71   2                                      //星期五
+  72   2                                      LCD1602_PrintString(1,14,"Fri");
+  73   2                                      break;
+  74   2                              case 7:
+  75   2                                      //星期六
+  76   2                                      LCD1602_PrintString(1,14,"Sat");
+  77   2                                      break;
+  78   2                              default:
+  79   2                                      LCD1602_PrintString(1,14,"Ero");
+  80   2                                      break;
+  81   2                      }
+  82   1      //    }
+  83   1      }
+  84            
+  85          
+  86          
+  87          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    267    ----
+   CONSTANT SIZE    =     32    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
