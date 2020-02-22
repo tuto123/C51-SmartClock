@@ -1,4 +1,4 @@
-#include <reg51.h>
+﻿#include <reg51.h>
 #define Timer(fr) 65536 - (12000000 / 12) / (fr << 1)
 #define DIAO(n) (n << 1) / 3    //附点n分音符的换算
 typedef unsigned char UCHAR;

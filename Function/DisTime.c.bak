@@ -1,4 +1,4 @@
-#include"lcd.h"
+﻿#include"lcd.h"
 #include "DS1302.h"
 #include "lcd1602.h"
 sbit K6=P3^6;   //12制的变换

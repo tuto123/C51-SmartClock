@@ -8,7 +8,7 @@ unsigned char clockdata[8];
 unsigned char clockdataBCD[8];
 unsigned char BRAMdata[31];
 
-//ÏòDS1302Ğ´Ò»¸ö×Ö½ÚµÄÊı¾İ
+//å‘DS1302å†™ä¸€ä¸ªå­—èŠ‚çš„æ•°æ®
 void DS1302_SPIwritebyte( unsigned char dat )
 {
 	unsigned char i;
@@ -23,7 +23,7 @@ void DS1302_SPIwritebyte( unsigned char dat )
 	}
 }
 
-//´ÓDS1302¶ÁÒ»¸ö×Ö½ÚµÄÊı¾İ
+//ä»DS1302è¯»ä¸€ä¸ªå­—èŠ‚çš„æ•°æ®
 unsigned char DS1302_SPIreadbyte( )
 {
 	unsigned char i, tmp;
@@ -41,12 +41,12 @@ unsigned char DS1302_SPIreadbyte( )
 		SCLK = 0;
 	}
 
-	SDA = 0; _nop_(); _nop_();			 //²»¼Ó»áÉÁÆÁ»òÏÔÊ¾85´íÎó
+	SDA = 0; _nop_(); _nop_();			 //ä¸åŠ ä¼šé—ªå±æˆ–æ˜¾ç¤º85é”™è¯¯
 
 	return tmp;
 }
 
-//ÏòDS1302Ğ´Ò»¸ö×Ö½ÚµÄÊı¾İµ½µØÖ·ÎªaddressµÄµ¥Ôª£¨¼Ä´æÆ÷£©
+//å‘DS1302å†™ä¸€ä¸ªå­—èŠ‚çš„æ•°æ®åˆ°åœ°å€ä¸ºaddressçš„å•å…ƒï¼ˆå¯„å­˜å™¨ï¼‰
 void DS1302_writeybyte( unsigned char address, unsigned char dat )
 {
 	CE = 0; _nop_();; 
@@ -63,7 +63,7 @@ void DS1302_writeybyte( unsigned char address, unsigned char dat )
 
 }
 
-//´ÓDS1302µÄaddressµÄµ¥Ôª£¨¼Ä´æÆ÷£©¶ÁÒ»¸ö×Ö½ÚµÄÊı¾İ
+//ä»DS1302çš„addressçš„å•å…ƒï¼ˆå¯„å­˜å™¨ï¼‰è¯»ä¸€ä¸ªå­—èŠ‚çš„æ•°æ®
 unsigned char DS1302_readbyte( unsigned char address )
 {
 	unsigned char tmp;
@@ -86,12 +86,12 @@ unsigned char DS1302_readbyte( unsigned char address )
 }
 
 
-//Í»·¢Ä£Ê½Ğ´Ê±ÖÓÊı¾İ£¬Êı¾İ´æ·ÅÔÚclockdataBCD[8]ÖĞ
+//çªå‘æ¨¡å¼å†™æ—¶é’Ÿæ•°æ®ï¼Œæ•°æ®å­˜æ”¾åœ¨clockdataBCD[8]ä¸­
 void DS1302_writeclockburst( )
 {	 
 	 unsigned char i;
 	 
-	 //È¡ÏûĞ´±£»¤
+	 //å–æ¶ˆå†™ä¿æŠ¤
 	 DS1302_unlock();
 
 	 CE = 0; _nop_();; 
@@ -99,10 +99,10 @@ void DS1302_writeclockburst( )
 	SDA = 0; _nop_();
 	CE = 1; _nop_();
 
-	//Ğ´ÈëÍ»·¢Ä£Ê½Ğ´¼Ä´æÆ÷µØÖ·
+	//å†™å…¥çªå‘æ¨¡å¼å†™å¯„å­˜å™¨åœ°å€
 	DS1302_SPIwritebyte( DS1302_CLOCKBURST + DS1302_WRITE );
 
-	for ( i = 0; i < 8; i++ )	 //Á¬ĞøĞ´Èë8¸ö×Ö½ÚÊı¾İ
+	for ( i = 0; i < 8; i++ )	 //è¿ç»­å†™å…¥8ä¸ªå­—èŠ‚æ•°æ®
 		DS1302_SPIwritebyte( clockdataBCD[i] );	
 	
 	CE = 0; _nop_();_nop_();
@@ -110,17 +110,17 @@ void DS1302_writeclockburst( )
 	SDA = 1; _nop_();_nop_();
 	 
 	 	 	
-	 //¿ªÆôĞ´±£»¤
+	 //å¼€å¯å†™ä¿æŠ¤
 	 DS1302_lock();
 }
 
 
-//Í»·¢Ä£Ê½¶ÁÊ±ÖÓÊı¾İ£¬Êı¾İ´æ·ÅÔÚclockdataBCD[8]ÖĞ
+//çªå‘æ¨¡å¼è¯»æ—¶é’Ÿæ•°æ®ï¼Œæ•°æ®å­˜æ”¾åœ¨clockdataBCD[8]ä¸­
 void DS1302_readclockburst( )
 {
 	unsigned char i;
 	 
-	 //È¡ÏûĞ´±£»¤
+	 //å–æ¶ˆå†™ä¿æŠ¤
 	DS1302_unlock();
 
 	CE = 0; _nop_();; 
@@ -128,27 +128,27 @@ void DS1302_readclockburst( )
 	SDA = 0; _nop_();
 	CE = 1; _nop_();
 
-	//Ğ´ÈëÍ»·¢Ä£Ê½Ğ´¼Ä´æÆ÷µØÖ·
+	//å†™å…¥çªå‘æ¨¡å¼å†™å¯„å­˜å™¨åœ°å€
 	DS1302_SPIwritebyte( DS1302_CLOCKBURST + DS1302_READ );
 
-	for ( i = 0; i < 8; i++ )	  //Á¬Ğø¶ÁÈ¡8¸ö×Ö½ÚÊı¾İ
+	for ( i = 0; i < 8; i++ )	  //è¿ç»­è¯»å–8ä¸ªå­—èŠ‚æ•°æ®
 		clockdataBCD[i] = DS1302_SPIreadbyte( );	
 	
 	CE = 0; _nop_();_nop_();
 	SCLK = 1; _nop_();_nop_();
 	SDA = 1; _nop_();_nop_(); 
 	 	 	
-	 //¿ªÆôĞ´±£»¤
+	 //å¼€å¯å†™ä¿æŠ¤
 	 DS1302_lock();
 }
 
 
-//Í»·¢Ä£Ê½Ğ´ramÊı¾İ£¬Êı¾İ´æ·ÅÔÚBRAMdata[31]ÖĞ
+//çªå‘æ¨¡å¼å†™ramæ•°æ®ï¼Œæ•°æ®å­˜æ”¾åœ¨BRAMdata[31]ä¸­
 void DS1302_writeramburst( )
 {
 	 unsigned char i;
 	 
-	 //È¡ÏûĞ´±£»¤
+	 //å–æ¶ˆå†™ä¿æŠ¤
 	 DS1302_unlock();
 
 	 CE = 0; _nop_();; 
@@ -156,26 +156,26 @@ void DS1302_writeramburst( )
 	SDA = 0; _nop_();
 	CE = 1; _nop_();
 
-	//Ğ´ÈëÍ»·¢Ä£Ê½Ğ´¼Ä´æÆ÷µØÖ·
+	//å†™å…¥çªå‘æ¨¡å¼å†™å¯„å­˜å™¨åœ°å€
 	DS1302_SPIwritebyte( DS1302_BRAMBURST + DS1302_WRITE );
 
-	for ( i = 0; i < 31; i++ )	 //Á¬ĞøĞ´Èë31¸ö×Ö½ÚÊı¾İ
+	for ( i = 0; i < 31; i++ )	 //è¿ç»­å†™å…¥31ä¸ªå­—èŠ‚æ•°æ®
 		DS1302_SPIwritebyte( BRAMdata[i] );	
 	
 	CE = 0; _nop_();_nop_();
 	SCLK = 1; _nop_();_nop_();
 	SDA = 1; _nop_();_nop_();	 
 	 	 	
-	//¿ªÆôĞ´±£»¤
+	//å¼€å¯å†™ä¿æŠ¤
 	DS1302_lock();	
 }
 
-//Í»·¢Ä£Ê½¶ÁramÊı¾İ£¬Êı¾İ´æ·ÅÔÚBRAMdata[31]ÖĞ
+//çªå‘æ¨¡å¼è¯»ramæ•°æ®ï¼Œæ•°æ®å­˜æ”¾åœ¨BRAMdata[31]ä¸­
 void DS1302_readramburst( )
 {
 	unsigned char i;
 	 
-	 //È¡ÏûĞ´±£»¤
+	 //å–æ¶ˆå†™ä¿æŠ¤
 	DS1302_unlock();
 
 	CE = 0; _nop_();; 
@@ -183,10 +183,10 @@ void DS1302_readramburst( )
 	SDA = 0; _nop_();
 	CE = 1; _nop_();
 
-	//Ğ´ÈëÍ»·¢Ä£Ê½Ğ´¼Ä´æÆ÷µØÖ·
+	//å†™å…¥çªå‘æ¨¡å¼å†™å¯„å­˜å™¨åœ°å€
 	DS1302_SPIwritebyte( DS1302_BRAMBURST + DS1302_READ );
 
-	for ( i = 0; i < 31; i++ )	 //Á¬Ğø¶ÁÈ¡31¸ö×Ö½ÚÊı¾İ
+	for ( i = 0; i < 31; i++ )	 //è¿ç»­è¯»å–31ä¸ªå­—èŠ‚æ•°æ®
 		BRAMdata[i] = DS1302_SPIreadbyte( );	
 	
 	CE = 0; _nop_();_nop_();
@@ -194,284 +194,284 @@ void DS1302_readramburst( )
 	SDA = 1; _nop_();_nop_();
 	 
 	 	 	
-	//¿ªÆôĞ´±£»¤
+	//å¼€å¯å†™ä¿æŠ¤
 	DS1302_lock();
 }
 
 
-//ÉÏËø£¨¿ªÆôĞ´±£»¤£©
+//ä¸Šé”ï¼ˆå¼€å¯å†™ä¿æŠ¤ï¼‰
 void DS1302_lock()
 {
 	DS1302_writeybyte( DS1302_CONTROL +  DS1302_WRITE, 0x80 );
 }
 
-//½âËø£¨È¡ÏûĞ´±£»¤£©
+//è§£é”ï¼ˆå–æ¶ˆå†™ä¿æŠ¤ï¼‰
 void DS1302_unlock()
 {
 	DS1302_writeybyte( DS1302_CONTROL +  DS1302_WRITE, 0x00 );
 }
 
 
-//»ñµÃÃëÖÓÊı¾İ£¬Êä³öÎª¶ş½øÂë
-unsigned char DS1302_getsecond()				  //Ãë
+//è·å¾—ç§’é’Ÿæ•°æ®ï¼Œè¾“å‡ºä¸ºäºŒè¿›ç 
+unsigned char DS1302_getsecond()				  //ç§’
 {
 	unsigned char tmp;
 
-	//¶ÁÈ¡ÃëÊı¾İ£¬tmpÎªBCDÂë
+	//è¯»å–ç§’æ•°æ®ï¼Œtmpä¸ºBCDç 
 	tmp = DS1302_readbyte ( DS1302_SECOND + DS1302_READ );
 	
-	//(tmp & 0x70) >> 4µÃµ½ÃëµÄÊ®Î»²¿·Ö£¬(tmp & 0x0F)µÃµ½ÃëµÄ¸öÎ»²¿·Ö
+	//(tmp & 0x70) >> 4å¾—åˆ°ç§’çš„åä½éƒ¨åˆ†ï¼Œ(tmp & 0x0F)å¾—åˆ°ç§’çš„ä¸ªä½éƒ¨åˆ†
 	return ( ((tmp & 0x70) >> 4) * 10 + (tmp & 0x0F) );
 }
 
-//»ñµÃ·ÖÖÓÊı¾İ£¬Êä³öÎª¶ş½øÂë
-unsigned char DS1302_getminute()				  //·Ö
+//è·å¾—åˆ†é’Ÿæ•°æ®ï¼Œè¾“å‡ºä¸ºäºŒè¿›ç 
+unsigned char DS1302_getminute()				  //åˆ†
 {
 	unsigned char tmp;
 
-	//¶ÁÈ¡·ÖÊı¾İ£¬tmpÎªBCDÂë
+	//è¯»å–åˆ†æ•°æ®ï¼Œtmpä¸ºBCDç 
 	tmp = DS1302_readbyte ( DS1302_MINUTE + DS1302_READ );
 	
-	//(tmp & 0x70) >> 4µÃµ½·ÖµÄÊ®Î»²¿·Ö£¬(tmp & 0x0F)µÃµ½·ÖµÄ¸öÎ»²¿·Ö
+	//(tmp & 0x70) >> 4å¾—åˆ°åˆ†çš„åä½éƒ¨åˆ†ï¼Œ(tmp & 0x0F)å¾—åˆ°åˆ†çš„ä¸ªä½éƒ¨åˆ†
 	return ( ((tmp & 0x70) >> 4) * 10 + (tmp & 0x0F) );
 }
 
-//»ñµÃĞ¡Ê±Êı¾İ£¬Êä³öÎª¶ş½øÂë£¬24½øÖÆ
-unsigned char DS1302_gethour()					  //Ê±
+//è·å¾—å°æ—¶æ•°æ®ï¼Œè¾“å‡ºä¸ºäºŒè¿›ç ï¼Œ24è¿›åˆ¶
+unsigned char DS1302_gethour()					  //æ—¶
 {
 	unsigned char tmp;
 
-	//¶ÁÈ¡Ğ¡Ê±Êı¾İ£¬tmpÎªBCDÂë
+	//è¯»å–å°æ—¶æ•°æ®ï¼Œtmpä¸ºBCDç 
 	tmp = DS1302_readbyte ( DS1302_HOUR + DS1302_READ );
 
-	//×î¸ßÎ»¡¾7¡¿Çø·Ö12½øÖÆ¡¢24½øÖÆ
-	if ( tmp & 0x80 ) //==========================12Ğ¡Ê±ÖÆ
-		//(( tmp & 0x20 ) >> 5)Çø·ÖAM(0)¡¢PM(1),0x20¶ÔÓ¦µÚ5Î»,PMĞèÒª¼Ó12, AM²»ĞèÒª¼Ó12
-		//( tmp & 0x10 ) >> 4)µÃµ½Ê±µÄÊ®Î»²¿·Ö£¬0x10¶ÔÓ¦µÚ4Î»
-		//(tmp & 0x0F)µÃµ½Ê±µÄ¸öÎ»²¿·Ö  
+	//æœ€é«˜ä½ã€7ã€‘åŒºåˆ†12è¿›åˆ¶ã€24è¿›åˆ¶
+	if ( tmp & 0x80 ) //==========================12å°æ—¶åˆ¶
+		//(( tmp & 0x20 ) >> 5)åŒºåˆ†AM(0)ã€PM(1),0x20å¯¹åº”ç¬¬5ä½,PMéœ€è¦åŠ 12, AMä¸éœ€è¦åŠ 12
+		//( tmp & 0x10 ) >> 4)å¾—åˆ°æ—¶çš„åä½éƒ¨åˆ†ï¼Œ0x10å¯¹åº”ç¬¬4ä½
+		//(tmp & 0x0F)å¾—åˆ°æ—¶çš„ä¸ªä½éƒ¨åˆ†  
 		return ( (( tmp & 0x20 ) >> 5) * 12 + (( tmp & 0x10 ) >> 4) * 10  + ( tmp & 0x0F ) ) ;	
-	else			//==========================24Ğ¡Ê±ÖÆ
-		//( tmp & 0x20 ) >> 5)µÃµ½Ê±µÄµÚ¶ş¸öÊ®Î»²¿·Ö£¬(( tmp & 0x10 ) >> 4)µÃµ½Ê±µÄµÚÒ»¸öÊ®Î»²¿·Ö£¬(tmp & 0x0F)µÃµ½Ê±µÄ¸öÎ»²¿·Ö
+	else			//==========================24å°æ—¶åˆ¶
+		//( tmp & 0x20 ) >> 5)å¾—åˆ°æ—¶çš„ç¬¬äºŒä¸ªåä½éƒ¨åˆ†ï¼Œ(( tmp & 0x10 ) >> 4)å¾—åˆ°æ—¶çš„ç¬¬ä¸€ä¸ªåä½éƒ¨åˆ†ï¼Œ(tmp & 0x0F)å¾—åˆ°æ—¶çš„ä¸ªä½éƒ¨åˆ†
 	    return ( (( tmp & 0x20 ) >> 5) * 10 + (( tmp & 0x10 ) >> 4) * 10  + ( tmp & 0x0F ) ) ;
 }
 
-//»ñµÃÈÕÆÚ
-unsigned char DS1302_getdate()					  //ÈÕ
+//è·å¾—æ—¥æœŸ
+unsigned char DS1302_getdate()					  //æ—¥
 {
 	unsigned char tmp;
 
-	//¶ÁÈ¡ÈÕÆÚÊı¾İ£¬tmpÎªBCDÂë
+	//è¯»å–æ—¥æœŸæ•°æ®ï¼Œtmpä¸ºBCDç 
 	tmp = DS1302_readbyte ( DS1302_DATE + DS1302_READ );
 	
-	//(tmp & 0x30) >> 4µÃµ½ÈÕÆÚµÄÊ®Î»²¿·Ö£¬(tmp & 0x0F)µÃµ½ÈÕÆÚµÄ¸öÎ»²¿·Ö
+	//(tmp & 0x30) >> 4å¾—åˆ°æ—¥æœŸçš„åä½éƒ¨åˆ†ï¼Œ(tmp & 0x0F)å¾—åˆ°æ—¥æœŸçš„ä¸ªä½éƒ¨åˆ†
 	return ( ((tmp & 0x30) >> 4) * 10 + (tmp & 0x0F) );	
 }
 
-//»ñµÃÔÂ·İ
-unsigned char DS1302_getmonth()				  //ÔÂ
+//è·å¾—æœˆä»½
+unsigned char DS1302_getmonth()				  //æœˆ
 {
 	unsigned char tmp;
 
-	//¶ÁÈ¡ÔÂ·İÊı¾İ£¬tmpÎªBCDÂë
+	//è¯»å–æœˆä»½æ•°æ®ï¼Œtmpä¸ºBCDç 
 	tmp = DS1302_readbyte ( DS1302_MONTH + DS1302_READ );
 	
-	//(tmp & 0x10) >> 4µÃµ½ÔÂµÄÊ®Î»²¿·Ö£¬(tmp & 0x0F)µÃµ½ÔÂµÄ¸öÎ»²¿·Ö
+	//(tmp & 0x10) >> 4å¾—åˆ°æœˆçš„åä½éƒ¨åˆ†ï¼Œ(tmp & 0x0F)å¾—åˆ°æœˆçš„ä¸ªä½éƒ¨åˆ†
 	return ( ((tmp & 0x10) >> 4) * 10 + (tmp & 0x0F) );	
 }
 
-//»ñµÃĞÇÆÚ
-unsigned char DS1302_getweekday()				  //ÖÜ
+//è·å¾—æ˜ŸæœŸ
+unsigned char DS1302_getweekday()				  //å‘¨
 {
 	unsigned char tmp;
 
-	//¶ÁÈ¡ĞÇÆÚÊı¾İ£¬tmpÎªBCDÂë
+	//è¯»å–æ˜ŸæœŸæ•°æ®ï¼Œtmpä¸ºBCDç 
 	tmp = DS1302_readbyte ( DS1302_WEEKDAY + DS1302_READ );
 	
-	//(tmp & 0x07)µÃµ½ĞÇÆÚ¼¸
+	//(tmp & 0x07)å¾—åˆ°æ˜ŸæœŸå‡ 
 	return ( tmp & 0x07 );	
 }
 
-//»ñµÃÄê·Ö
-unsigned char DS1302_getyear()					  //Äê
+//è·å¾—å¹´åˆ†
+unsigned char DS1302_getyear()					  //å¹´
 {
 	unsigned char tmp;
 
-	//¶ÁÈ¡ĞÇÆÚÊı¾İ£¬tmpÎªBCDÂë
+	//è¯»å–æ˜ŸæœŸæ•°æ®ï¼Œtmpä¸ºBCDç 
 	tmp = DS1302_readbyte ( DS1302_YEAR + DS1302_READ );
 	
-	//¸ß4Î»ÎªÄêµÄÊ®Î»²¿·Ö£¬µÍ4Î»ÎªÄêµÄ¸öÎ»²¿·Ö
+	//é«˜4ä½ä¸ºå¹´çš„åä½éƒ¨åˆ†ï¼Œä½4ä½ä¸ºå¹´çš„ä¸ªä½éƒ¨åˆ†
 	return ( ((tmp & 0xF0) >> 4) * 10 + (tmp & 0x0F) );
 }
 
 
 
-//ÉèÖÃÊ±ÖÓ---ÃëÊı¾İ£¬ÊäÈëÎª¶ş½øÂë
-void DS1302_setsecond( unsigned char second )	  //Ãë
+//è®¾ç½®æ—¶é’Ÿ---ç§’æ•°æ®ï¼Œè¾“å…¥ä¸ºäºŒè¿›ç 
+void DS1302_setsecond( unsigned char second )	  //ç§’
 {
 	if ( second > 59 )
 		return;
 	
-	//ÏÈ½âËø
+	//å…ˆè§£é”
 	DS1302_unlock();
 
-	//Ğ´ÈëÊı¾İ£¬µØÖ·ÎªDS1302_SECOND + DS1302_WRITE£¬ĞèÒª×ª»»ÎªBCDÂë
-	//(second/10)µÃµ½ÃëµÄÊ®Î»£¬( second %10 )µÃµ½ÃëµÄ¸öÎ»
+	//å†™å…¥æ•°æ®ï¼Œåœ°å€ä¸ºDS1302_SECOND + DS1302_WRITEï¼Œéœ€è¦è½¬æ¢ä¸ºBCDç 
+	//(second/10)å¾—åˆ°ç§’çš„åä½ï¼Œ( second %10 )å¾—åˆ°ç§’çš„ä¸ªä½
 	DS1302_writeybyte( DS1302_SECOND + DS1302_WRITE, (((second/10) & 0x07) << 4) | ( second %10 ) );
 	
-	//ÉÏËø
+	//ä¸Šé”
 	DS1302_lock();
 }
 
-//ÉèÖÃÊ±ÖÓ---·ÖÊı¾İ£¬ÊäÈëÎª¶ş½øÂë
-void DS1302_setminute( unsigned char minute )	  //·Ö
+//è®¾ç½®æ—¶é’Ÿ---åˆ†æ•°æ®ï¼Œè¾“å…¥ä¸ºäºŒè¿›ç 
+void DS1302_setminute( unsigned char minute )	  //åˆ†
 {
 	if ( minute > 59 )
 		return;
 	
-	//ÏÈ½âËø
+	//å…ˆè§£é”
 	DS1302_unlock();
 
-	//Ğ´ÈëÊı¾İ£¬µØÖ·ÎªDS1302_MINUTE + DS1302_WRITE£¬ĞèÒª×ª»»ÎªBCDÂë
-	//(second/10)µÃµ½·ÖµÄÊ®Î»£¬( second %10 )µÃµ½·ÖµÄ¸öÎ»
+	//å†™å…¥æ•°æ®ï¼Œåœ°å€ä¸ºDS1302_MINUTE + DS1302_WRITEï¼Œéœ€è¦è½¬æ¢ä¸ºBCDç 
+	//(second/10)å¾—åˆ°åˆ†çš„åä½ï¼Œ( second %10 )å¾—åˆ°åˆ†çš„ä¸ªä½
 	DS1302_writeybyte( DS1302_MINUTE + DS1302_WRITE, (((minute/10) & 0x07) << 4) | ( minute %10 ) );
 	
-	//ÉÏËø
+	//ä¸Šé”
 	DS1302_lock();
 }
 
-//ÉèÖÃÊ±ÖÓ---Ê±Êı¾İ£¬ÊäÈëÎª24Ğ¡Ê±½øÖÆ¶ş½øÂë 
-void DS1302_sethour( unsigned char hour )		  //Ê±
+//è®¾ç½®æ—¶é’Ÿ---æ—¶æ•°æ®ï¼Œè¾“å…¥ä¸º24å°æ—¶è¿›åˆ¶äºŒè¿›ç  
+void DS1302_sethour( unsigned char hour )		  //æ—¶
 {
 	unsigned char tmp;	
 
 	tmp = 0;
 
-	//»ñµÃDS1302µ±Ç°µÄĞ¡Ê±½øÖÆ
-	if ( DS1302_readbyte ( DS1302_HOUR + DS1302_READ ) & 0x80 )						 //12Ğ¡Ê±ÖÆ
+	//è·å¾—DS1302å½“å‰çš„å°æ—¶è¿›åˆ¶
+	if ( DS1302_readbyte ( DS1302_HOUR + DS1302_READ ) & 0x80 )						 //12å°æ—¶åˆ¶
 	{
-		tmp = tmp | 0x80;				//»¹ÊÇ12Ğ¡Ê±ÖÆ
+		tmp = tmp | 0x80;				//è¿˜æ˜¯12å°æ—¶åˆ¶
 		if ( hour > 12 )				//PM
 		{
-			tmp = tmp | 0x20;			//µÚ5Î»Îª1±íÊ¾PM,Îª0±íÊ¾AM£¨Ê¡ÂÔ£©
+			tmp = tmp | 0x20;			//ç¬¬5ä½ä¸º1è¡¨ç¤ºPM,ä¸º0è¡¨ç¤ºAMï¼ˆçœç•¥ï¼‰
 		   	hour = hour - 12;
 		}				
 	}
-	else									 //24Ğ¡Ê±ÖÆ
+	else									 //24å°æ—¶åˆ¶
 	{
 		if ( hour > 20 )
 		{
-			tmp = tmp | 0x20;				//µÚ¶ş¸öÊ®
+			tmp = tmp | 0x20;				//ç¬¬äºŒä¸ªå
 		   	hour = hour - 10;;
 		}
 	}
 	
-	if ( hour > 9 )				//ÉèÖÃ12Ğ¡Ê±ÖÆµÄÊ®Î»»ò24Ğ¡Ê±ÖÆµÄµÚÒ»¸öÊ®;
-			tmp = tmp | 0x10;		//µÚ4Î»
+	if ( hour > 9 )				//è®¾ç½®12å°æ—¶åˆ¶çš„åä½æˆ–24å°æ—¶åˆ¶çš„ç¬¬ä¸€ä¸ªå;
+			tmp = tmp | 0x10;		//ç¬¬4ä½
 
-	tmp = tmp | (( hour % 10 ) & 0x0F);	//¸öÎ»ÎªµÍ4Î»	
+	tmp = tmp | (( hour % 10 ) & 0x0F);	//ä¸ªä½ä¸ºä½4ä½	
 
-	//ÏÈ½âËø
+	//å…ˆè§£é”
 	DS1302_unlock();
 
-	//Ğ´ÈëÊı¾İ£¬µØÖ·ÎªDS1302_HOUR + DS1302_WRITE£¬tmpÒÑ¾­×ª»»ÎªBCDÂë
+	//å†™å…¥æ•°æ®ï¼Œåœ°å€ä¸ºDS1302_HOUR + DS1302_WRITEï¼Œtmpå·²ç»è½¬æ¢ä¸ºBCDç 
 	DS1302_writeybyte( DS1302_HOUR + DS1302_WRITE, tmp );
 	
-	//ÉÏËø
+	//ä¸Šé”
 	DS1302_lock();	
 }
 
-//ÉèÖÃÊ±ÖÓ---ÈÕÆÚÊı¾İ£¬ÊäÈëÎª¶ş½øÂë
-void DS1302_setdate( unsigned char date )		  //ÈÕ
+//è®¾ç½®æ—¶é’Ÿ---æ—¥æœŸæ•°æ®ï¼Œè¾“å…¥ä¸ºäºŒè¿›ç 
+void DS1302_setdate( unsigned char date )		  //æ—¥
 {
 	if ( date > 31 )
 		return;
 	
-	//ÏÈ½âËø
+	//å…ˆè§£é”
 	DS1302_unlock();
 
-	//Ğ´ÈëÊı¾İ£¬µØÖ·ÎªDS1302_DATE + DS1302_WRITE£¬ĞèÒª×ª»»ÎªBCDÂë
-	//(date/10)µÃµ½ÈÕÆÚµÄÊ®Î»£¬( date %10 )µÃµ½ÈÕÆÚµÄ¸öÎ»
+	//å†™å…¥æ•°æ®ï¼Œåœ°å€ä¸ºDS1302_DATE + DS1302_WRITEï¼Œéœ€è¦è½¬æ¢ä¸ºBCDç 
+	//(date/10)å¾—åˆ°æ—¥æœŸçš„åä½ï¼Œ( date %10 )å¾—åˆ°æ—¥æœŸçš„ä¸ªä½
 	DS1302_writeybyte( DS1302_DATE + DS1302_WRITE, (((date/10) & 0x03) << 4) | ( date %10 ) );
 	
-	//ÉÏËø
+	//ä¸Šé”
 	DS1302_lock();
 }
 
-//ÉèÖÃÊ±ÖÓ---ÔÂ·İÊı¾İ£¬ÊäÈëÎª¶ş½øÂë
-void DS1302_setmonth( unsigned char month )		//ÔÂ
+//è®¾ç½®æ—¶é’Ÿ---æœˆä»½æ•°æ®ï¼Œè¾“å…¥ä¸ºäºŒè¿›ç 
+void DS1302_setmonth( unsigned char month )		//æœˆ
 {
 	if ( month > 12 || month < 1 )
 		return;
 	
-	//ÏÈ½âËø
+	//å…ˆè§£é”
 	DS1302_unlock();
 
-	//Ğ´ÈëÊı¾İ£¬µØÖ·ÎªDS1302_MONTH + DS1302_WRITE£¬ĞèÒª×ª»»ÎªBCDÂë
-	//(month/10)µÃµ½ÔÂµÄÊ®Î»£¬( month %10 )µÃµ½ÔÂµÄ¸öÎ»
+	//å†™å…¥æ•°æ®ï¼Œåœ°å€ä¸ºDS1302_MONTH + DS1302_WRITEï¼Œéœ€è¦è½¬æ¢ä¸ºBCDç 
+	//(month/10)å¾—åˆ°æœˆçš„åä½ï¼Œ( month %10 )å¾—åˆ°æœˆçš„ä¸ªä½
 	DS1302_writeybyte( DS1302_MONTH + DS1302_WRITE, (((month/10) & 0x01) << 4) | ( month % 10 ) );
 	
-	//ÉÏËø
+	//ä¸Šé”
 	DS1302_lock();	
 }
 
-//ÉèÖÃÊ±ÖÓ---ĞÇÆÚÊı¾İ£¬ÊäÈëÎª¶ş½øÂë
-void DS1302_setweekday( unsigned char weekday )  //ÖÜ
+//è®¾ç½®æ—¶é’Ÿ---æ˜ŸæœŸæ•°æ®ï¼Œè¾“å…¥ä¸ºäºŒè¿›ç 
+void DS1302_setweekday( unsigned char weekday )  //å‘¨
 {
-   	if ( weekday > 7 || weekday < 1 )			//¼ì²éÊı¾İÓĞĞ§ĞÔ
+   	if ( weekday > 7 || weekday < 1 )			//æ£€æŸ¥æ•°æ®æœ‰æ•ˆæ€§
 		return;
 	
-	//ÏÈ½âËø
+	//å…ˆè§£é”
 	DS1302_unlock();
 
-	//Ğ´ÈëÊı¾İ£¬µØÖ·ÎªDS1302_WEEKDAY + DS1302_WRITE£¬ĞèÒª×ª»»ÎªBCDÂë
-	//(weekday & 0x07)µÃµ½ĞÇÆÚÖµ
+	//å†™å…¥æ•°æ®ï¼Œåœ°å€ä¸ºDS1302_WEEKDAY + DS1302_WRITEï¼Œéœ€è¦è½¬æ¢ä¸ºBCDç 
+	//(weekday & 0x07)å¾—åˆ°æ˜ŸæœŸå€¼
 	DS1302_writeybyte( DS1302_WEEKDAY + DS1302_WRITE, ( weekday & 0x07 ) );
 	
-	//ÉÏËø
+	//ä¸Šé”
 	DS1302_lock();
 }
 
-//ÉèÖÃÊ±ÖÓ---ÄêÊı¾İ£¬ÊäÈëÎª¶ş½øÂë
-void DS1302_setyear( unsigned char year )	  	//Äê
+//è®¾ç½®æ—¶é’Ÿ---å¹´æ•°æ®ï¼Œè¾“å…¥ä¸ºäºŒè¿›ç 
+void DS1302_setyear( unsigned char year )	  	//å¹´
 {
-	if ( year > 99 )			//¼ì²éÊı¾İÓĞĞ§ĞÔ
+	if ( year > 99 )			//æ£€æŸ¥æ•°æ®æœ‰æ•ˆæ€§
 		return;
 
-	//ÏÈ½âËø
+	//å…ˆè§£é”
 	DS1302_unlock();
 
-	//Ğ´ÈëÊı¾İ£¬µØÖ·ÎªDS1302_YEAR + DS1302_WRITE£¬ĞèÒª×ª»»ÎªBCDÂë
-	//(weekday & 0x07)µÃµ½ĞÇÆÚÖµ
+	//å†™å…¥æ•°æ®ï¼Œåœ°å€ä¸ºDS1302_YEAR + DS1302_WRITEï¼Œéœ€è¦è½¬æ¢ä¸ºBCDç 
+	//(weekday & 0x07)å¾—åˆ°æ˜ŸæœŸå€¼
 	DS1302_writeybyte( DS1302_YEAR + DS1302_WRITE, ( ((year/10) & 0x0F) << 4) | ((year % 10) & 0x0F) );
 	
-	//ÉÏËø
+	//ä¸Šé”
 	DS1302_lock();
 }
 
 
 
-//ÉèÖÃDS1302µÄÊ±¼ä£¬ÊäÈëÊı¾İ´æ·ÅÔÚclockdataÊı×éÖĞ
+//è®¾ç½®DS1302çš„æ—¶é—´ï¼Œè¾“å…¥æ•°æ®å­˜æ”¾åœ¨clockdataæ•°ç»„ä¸­
 void DS1302_settime( )
 {
-	 DS1302_setsecond( clockdata[0] );	  		//Ãë
-	 DS1302_setminute( clockdata[1] );	  		//·Ö
-	 DS1302_sethour( clockdata[2] );		  //Ê±
-	 DS1302_setdate( clockdata[3] );		  //ÈÕ
-	 DS1302_setmonth( clockdata[4] );	  		//ÔÂ
-	 DS1302_setyear( clockdata[5] );		  //Äê
-	 DS1302_setweekday( clockdata[6] );  		//ÖÜ
+	 DS1302_setsecond( clockdata[0] );	  		//ç§’
+	 DS1302_setminute( clockdata[1] );	  		//åˆ†
+	 DS1302_sethour( clockdata[2] );		  //æ—¶
+	 DS1302_setdate( clockdata[3] );		  //æ—¥
+	 DS1302_setmonth( clockdata[4] );	  		//æœˆ
+	 DS1302_setyear( clockdata[5] );		  //å¹´
+	 DS1302_setweekday( clockdata[6] );  		//å‘¨
 	 		
 }
 
-//»ñÈ¡DS1302µÄÊ±¼ä£¬Êä³öÊı¾İ´æ·ÅÔÚclockdataÊı×éÖĞ 
+//è·å–DS1302çš„æ—¶é—´ï¼Œè¾“å‡ºæ•°æ®å­˜æ”¾åœ¨clockdataæ•°ç»„ä¸­ 
 void DS1302_gettime( )
 {
-	clockdata[0]  = DS1302_getsecond();				  //Ãë
-	clockdata[1]  = DS1302_getminute();				  //·Ö
-	clockdata[2]  = DS1302_gethour();					  //Ê±
-	clockdata[3]  = DS1302_getdate();					  //ÈÕ
-	clockdata[4]  = DS1302_getmonth();				  //ÔÂ
-	clockdata[5]  = DS1302_getyear();					  //Äê
-	clockdata[6]  = DS1302_getweekday();				  //ÖÜ	
+	clockdata[0]  = DS1302_getsecond();				  //ç§’
+	clockdata[1]  = DS1302_getminute();				  //åˆ†
+	clockdata[2]  = DS1302_gethour();					  //æ—¶
+	clockdata[3]  = DS1302_getdate();					  //æ—¥
+	clockdata[4]  = DS1302_getmonth();				  //æœˆ
+	clockdata[5]  = DS1302_getyear();					  //å¹´
+	clockdata[6]  = DS1302_getweekday();				  //å‘¨	
 }
 
